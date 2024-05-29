@@ -12,7 +12,7 @@ const closeButton = document.getElementById("close");
 
 
 let formClose = false;
-
+let isRead = true;
 
 class Book {
     constructor(title, author, pages, read) {
@@ -97,7 +97,7 @@ return ( `
         <p>${title}</p>
         <p>${author}</p>
         <p>${pages} Pages</p>
-        <button class="${read ===true? 'read' :"unread"}" onclick=toggleRead(this)>${ read=== true ?"read" :"not read"}</button>
+        <button class="${read === isRead? 'read' :"unread"}" onclick=toggleRead(this)>${ read=== true ?"read" :"not read"}</button>
         <button  id="remove" class="remove" onclick="remove(this)">remove  </button>
     </div>`
 
@@ -132,16 +132,17 @@ function clearFom() {
  }
 
  // CHANGE BTN READ STATUS
- let isRead = true;
+
 
  function toggleRead (btnRead){
+    isRead =!isRead;
+    btnRead.innerText= isRead ? 'read' :'not read'
     btnRead.classList.toggle('read' );
     btnRead.classList.toggle('unread');
 // if isRead is true, the button text becomes "Read".
 // If isRead is false, the button text becomes "Not Read".
 
-    isRead =!isRead;
-   btnRead.innerText= isRead ? 'read' :'not read'
+   
   
    console.log(isRead)
   
