@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+    <link rel="stylesheet" href="styles.css">
+    <script
+    src="https://kit.fontawesome.com/4c536a6bd5.js"
+    crossorigin="anonymous"></script>
+    <title> Simple Library App</title>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="head">MyLibrary</div>
+        <button id="add"  class="add-book">+  </button>
+        <div id="add-form" class="add-form">
+            <div class="form" id="form">
+              <button id="close"  class="close-form">+  </button>
+                  <h3>Add New Book</h3>
+                <span>Title</span>
+                <input type="text" placeholder="title" data-title autocomplete="off"/>
+                <span>author</span>
+                <input type="text" placeholder="author" data-author autocomplete="off"/>
+                <span>Pages</span>
+                <input type="number" placeholder="pages" data-pages autocomplete="off"/>
+                <input type="checkbox" data-read/>
+                <button  id="submit"class="remove">submit </button>
+            </div>
+                
+        </div>
+        <div class="overlay" id="overlay"></div>
+        <div id="cards" class="cards"></div>
+        <footer class="footer">
+            <p>
+              Copyright ©
+              <script>
+                document.write(new Date().getFullYear())
+              </script>
+            Farouk1995Specialiste
+            </p>
+            <a href="https://github.com/Farouk1995Specialiste" target="_blank">
+              <i class="fab fa-github"></i
+            ></a>
+          </footer>  
+    </div>
+    
+     
+        </div>
+   <script src="script.js"></script> 
+</body>
+</html>
