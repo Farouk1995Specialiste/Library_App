@@ -3,16 +3,14 @@ const cards = document.getElementById('cards');
 const addBook = document.getElementById('add');
 const addForm = document.getElementById('add-form');
 const btnSubmit = document.getElementById('submit');
-const dataTtitle =  document.querySelector('[data-title]');
-const dataTAuthor =  document.querySelector('[data-author]') ;
-const dataPage = document.querySelector('[data-pages]') ;
-const dataRead = document.querySelector('[data-read]') ;
+const dataTitle = document.querySelector('[data-title]');
+const dataAuthor = document.querySelector('[data-author]');
+const dataPages = document.querySelector('[data-pages]');
+const dataRead = document.querySelector('[data-read]');
 const overlay = document.getElementById('overlay');
 const closeButton = document.getElementById("close");
 
-
 let formClose = false;
-let isRead = true;
 
 class Book {
     constructor(title, author, pages, read) {
@@ -20,134 +18,87 @@ class Book {
         this.author = author;
         this.pages = pages;
         this.read = read;
-        this.info = function () {
-            return `${this.title} by ${this.author} , ${this.pages} pages ${this.read} `;
-        };
+    }
+
+    info() {
+        return `${this.title} by ${this.author}, ${this.pages} pages, ${this.read ? 'read' : 'not read'}`;
     }
 }
-
-const title = dataTtitle.value;
-const author = dataTAuthor.value ;
-const pages = dataPage.value ;
-const read = dataRead.checked;
-
-
-
-
-
 
 function addBookToLibrary(arr) {
-  
-arr.push(
-new Book( dataTtitle.value ,dataTAuthor.value ,  dataPage.value, dataRead.checked)   
-)
-return arr ,
-disPlayIntoCards(arr)
-  }
- 
-   
-//  // show From 
-function EnableModalOrClosng() {
-    if(formClose){
-        addForm.style.cssText='  transform: translate(32%, 0%) scale(0);'
-        addBook.style.cssText ="transform: rotate(0deg);" 
-        overlay.style.display='none';
-        formClose = false
-    }else{
-         addBook.style.cssText ="transform: rotate(45deg);"
-        addForm.style.cssText='  transform: translate(32%, 0%) scale(1);' 
-        overlay.style.display='block';
-        formClose = true
-    }
+    const title = dataTitle.value;
+    const author = dataAuthor.value;
+    const pages = dataPages.value;
+    const read = dataRead.checked;
 
-     }
-// close form
-function closeForm(){
-    if(formClose){
-        addForm.style.cssText='  transform: translate(32%, 0%) scale(0);'
-        addBook.style.cssText ="transform: rotate(0deg);" 
-        overlay.style.display='none';
-       
-        clearFom()
+    arr.push(new Book(title, author, pages, read));
+    displayBooks(arr);
+}
+
+function enableModalOrClose() {
+    if (formClose) {
+        addForm.style.transform = 'translate(32%, 0%) scale(0)';
+        addBook.style.transform = "rotate(0deg)";
+        overlay.style.display = 'none';
+    } else {
+        addForm.style.transform = 'translate(32%, 0%) scale(1)';
+        addBook.style.transform = "rotate(45deg)";
+        overlay.style.display = 'block';
+    }
+    formClose = !formClose;
+}
+
+function closeForm() {
+    if (formClose) {
+        addForm.style.transform = 'translate(32%, 0%) scale(0)';
+        addBook.style.transform = "rotate(0deg)";
+        overlay.style.display = 'none';
+        clearForm();
+        formClose = false;
     }
 }
-    
-function submitFotm (){
-if (  dataTtitle.value !== '' && dataTtitle.value !== '' && dataTAuthor.value !==''){
-    addBookToLibrary(myLibrary);
-    clearFom()
-    addForm.style.cssText='  transform: translate(32%, 0%) scale(0);' ;
-    overlay.style.display='none'
-    addBook.style.cssText ='transform:rotate(0deg);'
+
+function submitForm() {
+    if (dataTitle.value && dataAuthor.value && dataPages.value) {
+        addBookToLibrary(myLibrary);
+        clearForm();
+        closeForm();
+    }
 }
 
-          }
-          
-    // FUNCTION THAT DISPALY CARDS
-  function disPlayIntoCards(myLibrary)
-  {
-  
- cards.innerHTML = myLibrary.map ((item,index)=>{
- const myLibraryIndex =   myLibrary.map((item,index,arr)=>arr.indexOf(item))
-
-const {title,author,pages,read}=item;
-
-return ( `
-        <div data-book-index='${(myLibraryIndex[index])}'
-        <p>${title}</p>
-        <p>${author}</p>
-        <p>${pages} Pages</p>
-        <button class="${read === isRead? 'read' :"unread"}" onclick=toggleRead(this)>${ read=== true ?"read" :"not read"}</button>
-        <button  id="remove" class="remove" onclick="remove(this)">remove  </button>
-    </div>`
-
-      
-    
-    )
-
-       }).join("")
-    
-  }
-
-// clear form 
-function clearFom() {
-    dataTtitle.value= '';
-    dataTAuthor.value ='';
-    dataPage.value= '';
-    dataRead.checked = false
+function displayBooks(library) {
+    cards.innerHTML = library.map((book, index) => {
+        return `
+            <div data-book-index='${index}'>
+                <p>${book.title}</p>
+                <p>${book.author}</p>
+                <p>${book.pages} Pages</p>
+                <button class="${book.read ? 'read' : 'unread'}" onclick="toggleRead(${index}, this)">${book.read ? 'read' : 'not read'}</button>
+                <button class="remove" onclick="removeBook(${index})">remove</button>
+            </div>`;
+    }).join("");
 }
 
-// REMOVE CARD FORM ARRAY AND PAGE
- function remove (buttonElement){
-  const bookElement = buttonElement.parentElement
-  const bookIndex = parseInt(bookElement.dataset.bookIndex)
-  console.log(bookElement.dataset)
-   //dataset is a special property of HTML elements that allows you to store custom data attributes as key-value pairs.
-  console.log(bookIndex)
-  // remove item from array
-  myLibrary.splice(bookIndex ,1)
-  console.log(myLibrary)
-  // update the Dom
-  bookElement.remove();
- }
+function clearForm() {
+    dataTitle.value = '';
+    dataAuthor.value = '';
+    dataPages.value = '';
+    dataRead.checked = false;
+}
 
- // CHANGE BTN READ STATUS
+function removeBook(index) {
+    myLibrary.splice(index, 1);
+    displayBooks(myLibrary);
+}
 
+function toggleRead(index, button) {
+    myLibrary[index].read = !myLibrary[index].read;
+    console.log(myLibrary[index]);
+    console.log(!myLibrary[index].read);
 
- function toggleRead (btnRead){
-    isRead =!isRead;
-    btnRead.innerText= isRead ? 'read' :'not read'
-    btnRead.classList.toggle('read' );
-    btnRead.classList.toggle('unread');
-// if isRead is true, the button text becomes "Read".
-// If isRead is false, the button text becomes "Not Read".
+    displayBooks(myLibrary);
+}
 
-   
-  
-   console.log(isRead)
-  
- }
-
- addBook.addEventListener('click',EnableModalOrClosng)
-btnSubmit.addEventListener('click',submitFotm) ;
-closeButton.addEventListener('click',closeForm)
+addBook.addEventListener('click', enableModalOrClose);
+btnSubmit.addEventListener('click', submitForm);
+closeButton.addEventListener('click', closeForm);
