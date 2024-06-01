@@ -1,6 +1,6 @@
 const myLibrary = [];
 const cards = document.getElementById('cards');
-const addBook = document.getElementById('add');
+const addBookButton = document.getElementById('add');
 const addForm = document.getElementById('add-form');
 const btnSubmit = document.getElementById('submit');
 const dataTitle = document.querySelector('[data-title]');
@@ -10,7 +10,7 @@ const dataRead = document.querySelector('[data-read]');
 const overlay = document.getElementById('overlay');
 const closeButton = document.getElementById("close");
 
-let formClose = false;
+let isFormOpen = false;
 
 class Book {
     constructor(title, author, pages, read) {
@@ -25,80 +25,84 @@ class Book {
     }
 }
 
-function addBookToLibrary(arr) {
+function addBookToLibrary(library) {
     const title = dataTitle.value;
     const author = dataAuthor.value;
     const pages = dataPages.value;
     const read = dataRead.checked;
-
-    arr.push(new Book(title, author, pages, read));
-    displayBooks(arr);
-}
-
-function enableModalOrClose() {
-    if (formClose) {
-        addForm.style.transform = 'translate(32%, 0%) scale(0)';
-        addBook.style.transform = "rotate(0deg)";
-        overlay.style.display = 'none';
-    } else {
-        addForm.style.transform = 'translate(32%, 0%) scale(1)';
-        addBook.style.transform = "rotate(45deg)";
-        overlay.style.display = 'block';
+    if(title && author && pages && read){
+    library.push(new Book(title, author, pages, read));
+     displayBooks(library);
+     clearForm();
+     closeModal();
+    }else {
+        alert('All field must be filled out')
     }
-    formClose = !formClose;
+   
+   
 }
 
-function closeForm() {
-    if (formClose) {
-        addForm.style.transform = 'translate(32%, 0%) scale(0)';
-        addBook.style.transform = "rotate(0deg)";
-        overlay.style.display = 'none';
-        clearForm();
-        formClose = false;
-    }
+function openModal() {
+addForm.style.transform= 'translate(32%, 0%) scale(1)';
+addBookButton.style.transform = "rotate(45deg)";
+overlay.style.display= 'block';
+
+}
+function closeModal () {
+    addForm.style.transform= 'translate(32%, 0%) scale(0)';
+    addBookButton.style.transform = "rotate(0deg)";
+    overlay.style.display= 'none';
+  clearForm();
+}
+function toggleModal (){
+isFormOpen ?openModal():closeModal();
+isFormOpen = !isFormOpen
 }
 
-function submitForm() {
-    if (dataTitle.value && dataAuthor.value && dataPages.value) {
-        addBookToLibrary(myLibrary);
-        clearForm();
-        closeForm();
-    }
+
+
+function displayBooks(library){
+cards.innerHTML = library.map((book,index)=>{
+    return `
+    <div data-book-index="${index}">
+    <p>${book.title}</p>
+    <p>${book.author}</p>
+    <p>${book.pages} Pages</p>
+    <button class="${book.read ? 'read' :'unread'}" data-index="${index}" data-action="toggle-read" >${book.read ? 'read':' not read'}</button>
+    <button class="remove" data-index="${index}" data-action="remove">remove</button>
+    </div>`
+}).join("")
 }
 
-function displayBooks(library) {
-    cards.innerHTML = library.map((book, index) => {
-        return `
-            <div data-book-index='${index}'>
-                <p>${book.title}</p>
-                <p>${book.author}</p>
-                <p>${book.pages} Pages</p>
-                <button class="${book.read ? 'read' : 'unread'}" onclick="toggleRead(${index}, this)">${book.read ? 'read' : 'not read'}</button>
-                <button class="remove" onclick="removeBook(${index})">remove</button>
-            </div>`;
-    }).join("");
+function clearForm(){
+    dataTitle.value='';
+    dataAuthor.value='';
+    dataPages.value='';
+    dataRead.checked=false;
+}
+function handleCardClick(event){
+const index = event.target.dataset.index; // access the data-index attibute
+const action = event.target.dataset.action; // access the data-action atribute
+ 
+if(action === 'toggle-read'){
+    toggleRead(index)
+}else if(action === 'remove'){
+    removeBook(index)
 }
 
-function clearForm() {
-    dataTitle.value = '';
-    dataAuthor.value = '';
-    dataPages.value = '';
-    dataRead.checked = false;
+}
+function removeBook (index){
+myLibrary.splice(index , 1);
+displayBooks(myLibrary);
 }
 
-function removeBook(index) {
-    myLibrary.splice(index, 1);
-    displayBooks(myLibrary);
+function toggleRead (index){
+myLibrary[index].read=!myLibrary[index].read;
+displayBooks(myLibrary)
 }
 
-function toggleRead(index, button) {
-    myLibrary[index].read = !myLibrary[index].read;
-    console.log(myLibrary[index]);
-    console.log(!myLibrary[index].read);
 
-    displayBooks(myLibrary);
-}
-
-addBook.addEventListener('click', enableModalOrClose);
-btnSubmit.addEventListener('click', submitForm);
-closeButton.addEventListener('click', closeForm);
+btnSubmit.addEventListener('click',()=>addBookToLibrary(myLibrary));
+closeButton.addEventListener('click',closeModal);
+addBookButton.addEventListener('click',toggleModal);
+cards.addEventListener('click',handleCardClick);
